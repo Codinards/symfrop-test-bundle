@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+
+        {% block stylesheets %}
+        <style>
+            body{
+                padding: 0px;
+                margin: 0px;
+            }
+
+            h1{
+                text-align: center;
+            }
+            
+            .symfrop-container{
+                margin: 8px;
+                padding: 8px;
+                display: flex;
+                justify-content: center; 
+                flex-direction: column;
+                padding-top: 40px;
+                padding-bottom:60px;
+            }
+
+            .symfrop-row{
+                display: flex;
+                align-items: stretch;
+                justify-content: space-between;
+                flex-wrap: wrap;
+            }
+            
+            .symfrop-col{
+                padding: 4px;
+                margin: 4px;
+                width: 100%;
+            }
+
+            .symfrop-col-4{
+                padding: 4px;
+                margin: 4px;
+                width: 25vw;
+            }
+
+            .symfrop-col-3{
+                padding: 4px;
+                margin: 4px;
+                width: 30.5vw;
+            }
+
+            .symfrop-width-3{
+                width: 30.5vw;
+            }
+
+            .symfrop-width-4{
+                width: 25vw;
+            }
+
+            .symfrop-width-2{
+                width: 25vw;
+            }
+            
+            .symfrop-bg-dark{
+                background-color: rgb(26, 26, 32);
+            }
+            
+            .symfrop-form{
+                width: 40vw;
+                padding: 5px;
+                padding: 10px;
+                background-color: rgba(26, 100, 32, 0.4);
+            }
+            
+            .symfrop-form-group{
+                margin: 10px;
+            }
+            
+            .symfrop-form-group > ul {
+                color: red;
+                padding-top: 0;
+                padding-bottom: 0;
+                margin-top: 0;
+                margin-bottom: 0;
+            }
+
+            .symfrop-card{
+                width: 100%;
+                /*padding: 4px;
+                background-color: #00ffff;*/
+                background-color: rgba(26, 100, 32, 0.4);
+                min-height: 50px;
+                border-radius: 5px;
+                position: relative;
+            }
+
+            .symfrop-card-body{
+                padding: 2px;
+                min-height: 40px;
+            }
+
+            .symfrop-card-title{
+                font-size: 1.2rem;
+                padding: 8px;
+                background-color: #50cece;
+                border-radius: 5px 5px 0px 0px;
+
+            }
+
+            .symfrop-card-footer{
+                font-size: 1.2rem;
+                padding: 4px;
+                /*background-color: #50cece;*/
+                border-radius: 0px 0px 5px 5px;
+                min-height: 30px;
+                display: flex;
+                justify-content: center;
+            }
+
+            .symfrop-card-footer a{
+                text-decoration: none;
+            }
+            
+            .symfrop-display-block{
+                display:block;
+            }
+
+            a{
+                text-decoration: none;
+            }
+            
+            .symfrop-input {
+                width: 100%;
+                height: 1.2rem;
+                border-radius: 5px;
+                /* background-color:rgba(50, 50, 50, 0.05); */
+            }
+
+            .symfrop-btn{
+                min-width: 80px;
+                min-height: 20px;
+                border-radius: 4px;
+                padding: 5px;
+                border: 1px solid grey;
+                background-color: grey;
+            }
+            
+            .symfrop-btn:hover, input:hover{
+                opacity: 0.7;
+            }
+            
+            .symfrop-btn.symfrop-btn-primary{
+                background-color: rgb(0, 150, 200);
+                color: white;
+            }
+
+            .symfrop-btn.symfrop-btn-success{
+                background-color: rgb(0, 150, 20);
+                color: white;
+            }
+
+            .symfrop-btn.symfrop-btn-danger{
+                background-color: rgb(200, 50, 0);
+                color: white;
+            }
+            
+            .symfrop-text-white{
+                color: white;
+            }
+            .symfrop-text-center{
+                text-align: center;
+            }
+
+            .symfrop-text-left{
+                text-align: left;
+            }
+            .symfrop-text-right{
+                text-align: right;
+            }
+            th, td{
+                padding: 2px;
+            }
+
+            .symfrop-flex{
+                display: flex;
+            }
+            .symfrop-flex-center{
+                align-items: center;
+                justify-content: center;
+            }
+
+            .symfrop-alert{
+                margin: 4px;
+                padding: 8px;
+                border-radius: 5px;
+                background-color: #cacaca;
+                color: white;
+                text-align: center;
+            }
+            .symfrop-alert.error{
+                background-color: rgba(186, 86, 86, 0.7);
+            }
+
+            .symfrop-alert.symfrop-success{
+                background-color: rgba(86, 186, 86, 0.7);
+            }
+
+            @media screen and (max-width: 720px ){
+                .symfrop-form{
+                    width: 80vw;
+                }
+
+                .symfrop-col-4{
+                    width: 95vw;
+                }
+    
+                .symfrop-col-3{
+                    width: 95vw;
+                }
+
+                .symfrop-width-3{
+                    width: 88vw;
+                }
+
+                .symfrop-width-4{
+                    width: 88vw;
+                }
+
+                .symfrop-width-2{
+                    width: 100vw;
+                }
+            }
+
+            @media screen and (max-width: 860px ){
+                .symfrop-col-4{
+                    width: 60vw;
+                }
+    
+                .symfrop-col-3{
+                    width: 60vw;
+                }
+
+                .symfrop-width-3{
+                    width: 58vw;
+                }
+
+                .symfrop-width-4{
+                    width: 58vw;
+                }
+
+                .symfrop-width-2{
+                    width: 60vw;
+                }
+            }
+            </style>
+            
+            {% if stylesheets %}
+                {% for stylesheet in stylesheets %}
+                <link rel="stylesheet" href="{{ stylesheet }}">
+                {% endfor %}
+            {% endif %}
+          
+        {% endblock %}
+
+
+    </head>
+    <body>
+        {% if navbar_top %}
+            {{ include(navbar_top)  }}
+        {% endif %}
+        <div class="symfrop-container" >
+        {% block body %}{% endblock %}
+        </div>
+        {% if navbar_bottom %}
+        {{ include(navbar_bottom)  }}
+        {% endif %}
+
+        {% block javascripts %}
+
+        {% endblock %}
+        
+        {% if scripts %}
+            {% for script in scripts %}
+            <script src="{{ script }}"></script>
+            {% endfor %}
+        {% endif %}     
+    </body>
+
+</html>

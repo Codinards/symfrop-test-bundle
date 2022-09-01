@@ -1,0 +1,114 @@
+{% extends "@Symfrop/base.html.twig" %}
+
+{% block title %}
+    {{ __t('Roles Index') }}
+{% endblock title %}
+
+{% block body %}
+    
+        <h1>{{ __t('Roles Index') }}</h1>
+        <div class="symfrop-bg-dark">
+            <hr>
+        </div>
+
+        {% if app.session.flashbag.has('error') %}
+            {% for error in app.flashes()['error'] %}
+                <div class="symfrop-alert symfrop-error">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% if app.session.flashbag.has('success') %}
+            {% for success in app.flashes()['success'] %}
+            <div class="symfrop-alert symfrop-success">
+                {{ success }}
+            </div>
+            {% endfor %}
+        {% endif %}
+
+
+        <div class="symfrop-row">
+            <div class="symfrop-col text-right">
+                {{ create_symfrop_link('njeaner_symfrop_role_create', __u('Add new role'), {}, {class:"symfrop-btn symfrop-btn-primary"}) }}
+                {{ create_symfrop_link('njeaner_symfrop_user_index', __u('All Users'), {}, {class: 'symfrop-btn symfrop-btn-success'}) }}
+            </div>
+        </div>
+        <hr/>
+        {% for items in roles | batch(3) %}
+            <div class="symfrop-row" style="min-height: max-content;">
+                {% for role in items %}
+                    <div class="symfrop-col-3" style="height:inherit;">
+                        <div class="symfrop-card" style="min-height:100%;">
+                            <div class="symfrop-card-title symfrop-text-center" style="text-transform: capitalize;">{{ __u(role.title) }}</div>
+                            <div class="symfrop-card-body">
+                               <table class="symfrop-table symfrop-text-left">
+                                <tr>
+                                    <th>{{ __u('Name') }}</th>
+                                    <td>: {{ __u(role.name) }}</td>
+                                </tr>
+                                <tr>
+                                    <th>{{ __u('Title') }}</th>
+                                    <td>: {{ __u(role.title) | title }}</td>
+                                </tr>
+                                <tr>
+                                    <th>{{ __u('Is Deletable') }}</th>
+                                    <td>: {{ __u(role.isDeletable ? 'True' : 'False') }}</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <tr class="symfrop-text-center" style="background-color: rgba(0, 0, 0, 0.2);">
+                                            <th colspan="2" class="symfrop-width-3" >{{ __u('Actions') }} </th>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                    <ul style="list-style: circle;">
+                                                    {% for action in role.actions %}
+                                                        <li>
+                                                            {# {% if action.isUpdatable %} #}
+                                                            {{ create_symfrop_link_default(
+                                                                'njeaner_symfrop_action_edit',
+                                                                __(action.title),
+                                                                {action: action.id},
+                                                                {style: 'color:inherit;', title:'Edit this action'}
+                                                            ) }}
+
+                                                        </li>
+                                                        <hr>
+                                                    {% endfor %}
+                                                    </ul> 
+                                            </td>
+                                        </tr>
+                                    </td>
+                                </tr>
+                               </table>
+                            </div>
+                            <div class="symfrop-card-footer symfrop-text-center">
+                                {% if role.name != 'ROLE_SUPERADMIN' %}
+                                    {{ create_symfrop_link('njeaner_symfrop_role_update', __u('Editer'), {role: role.id}, {class:"btn btn-primary"}) }}
+                                {% endif %}
+                                {% if role.isDeletable %}
+                                {{ create_symfrop_form(
+                                    'njeaner_symfrop_role_delete',
+                                    __u('Delete'),
+                                    {role: role.id},
+                                    { 
+                                        attr: {style: "display: inline-block;font-size:1.2rem;"},
+                                        btn_attr: {class: "symfrop-btn symfrop-btn-danger", style: "min-height: 30px;margin-left:10px;"},
+                                        csrf_name: 'symfrop_role_delete',
+                                        confirm: __u('Are you sure to delete the role') ~ ' ' ~ __(role.name) ~ '?'
+                                    }
+                                ) }}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                {% if loop.index is divisible by(3) %}
+                    </div><div class='symfrop-row'>
+                {% endif %}
+            </div>
+        {% endfor %}     
+  
+
+{% endblock body %}

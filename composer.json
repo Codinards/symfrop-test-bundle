@@ -1,0 +1,45 @@
+{
+  "name": "njeaner/symfrop",
+  "description": "A Symfony frontend role permission bundle. This bundle allow web administrator to manage user role permission",
+  "type": "symfony-bundle",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Njeaner\\Symfrop\\": "src/",
+      "Njeaner\\Symfrop\\Tests\\": "src/tests/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Jean Fils de Ntouoka 2",
+      "email": "nguimjeaner@gmail.com"
+    }
+  ],
+  "require-dev": {
+    "symfony/framework-bundle": "^6.1",
+    "phpunit/phpunit": "^9.5",
+    "symfony/browser-kit": "^6.1",
+    "symfony/debug-bundle": "^6.1",
+    "symfony/maker-bundle": "^1.45",
+    "symfony/phpunit-bridge": "^6.1"
+  },
+  "require": {
+    "php": "^8.1.0",
+    "symfony/dependency-injection": "^6.1",
+    "symfony/config": "^6.1",
+    "symfony/http-kernel": "^6.1",
+    "symfony/yaml": "^6.1",
+    "doctrine/annotations": "^1.13",
+    "doctrine/orm": "^2.13",
+    "doctrine/doctrine-migrations-bundle": "^3.2",
+    "opis/closure": "^3.6",
+    "twig/twig": "^3.4",
+    "symfony/form": "^6.1",
+    "symfony/translation": "^6.1",
+    "symfony/twig-bundle": "^6.1",
+    "symfony/validator": "^6.1",
+    "symfony/security-bundle": "^6.1",
+    "twig/extra-bundle": "^3.4",
+    "symfony/console": "^6.1"
+  }
+}

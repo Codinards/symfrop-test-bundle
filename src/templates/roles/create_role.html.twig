@@ -1,0 +1,54 @@
+{% extends "@Symfrop/base.html.twig" %}
+
+{% block title %}
+    {{ __(title) | title }}
+{% endblock title %}
+
+{% block body %}
+<div class="symfrop-col">
+      <h1 class="symfrop-text-center">{{ __(title) | title }}</h1>
+      <div class="symfrop-bg-dark">
+        <hr>
+      </div>
+
+      <div class="symfrop-row">
+        <div class="symfrop-col symfrop-text-right">
+            {{ create_symfrop_link('njeaner_symfrop_role_index', __u('Roles index'), {}, {class:"symfrop-btn symfrop-btn-primary"}) }}
+        </div>
+    </div>
+    <hr/>
+      <div class="symfrop-row symfrop-flex-center">
+          <div class="symfrop-col symfrop-flex symfrop-flex-center" >
+    <div style="padding-top: 10px;" class="symfrop-form">
+        {{ form_start(form) }}
+        {{ form_row(form.name) }}
+        {{ form_row(form.title) }}
+        <div class="symfrop-form-group">
+            {{ form_widget(form.isDeletable) }}
+            {{ form_label(form.isDeletable) }}
+        </div>
+        
+        <div class="symfrop-form-group">
+            {{ form_label(form.actions) }}
+            {{ form_errors(form.actions) }}
+            <div id="actions" style="padding-left: 30px;">
+            {% for action in form.actions %}
+                <div class="symfrop-action_row">
+                    {{ form_widget(action) }}
+                    <span>{{ form_label(action) }}</span>
+                </div>
+            {% endfor %}  
+            </div>
+        </div>
+        {# {{ form_widget(form) }} #}
+        <div>
+            <button type="submit" id="symfrop_role_create" class="symfrop-btn symfrop-btn-primary">{{ __u('Save') }}</button>
+        </div>
+        {{ form_end(form) }}
+    </div>                
+          </div>
+      </div>
+
+</div>
+
+{% endblock body %}
