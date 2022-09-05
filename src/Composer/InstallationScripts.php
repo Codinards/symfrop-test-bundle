@@ -6,7 +6,7 @@ use Composer\Script\Event;
 
 class InstallationScripts
 {
-    public static function postPackageInstall(Event $event)
+    public static function prePackageInstall(Event $event)
     {
         $configContent = "
 symfrop_bundle:
@@ -33,9 +33,19 @@ symfrop_bundle:
         stylesheets: []
 ";
         $vendorDir = $event->getComposer()->getConfig()->get('vendor-dir');
-        $configDir =  dirname($vendorDir) . '/configs';
-        if (file_exists($configDir)) {
+        $configDir =  dirname($vendorDir) . '/config';
+        $packageDir = $configDir . '/packages';
+        if (file_exists($packageDir)) {
             file_put_contents($configDir . '/symfrop.yaml', $configContent);
+        }
+        $routesDir = $configDir . '/routes';
+        if (file_exists($routesDir)) {
+            $routeConfig = "
+controllers:
+    resource: '@SymfropBundle/Controller/'
+    type: attribute";
+
+            file_put_contents($routesDir . '/attributes.yaml', $routeConfig);
         }
     }
 }
