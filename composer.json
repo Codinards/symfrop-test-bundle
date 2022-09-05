@@ -30,7 +30,7 @@
     "symfony/http-kernel": "^6.1",
     "symfony/yaml": "^6.1",
     "doctrine/annotations": "^1.13",
-    "doctrine/orm": "^2.13",
+    "doctrine/orm": "^2.12",
     "doctrine/doctrine-migrations-bundle": "^3.2",
     "opis/closure": "^3.6",
     "twig/twig": "^3.4",
