@@ -33,7 +33,9 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-            ->variableNode('resources_info')->isRequired()
+            ->variableNode('resources_info')->isRequired()->defaultValue([
+                "App\Controller" => "%kernel.project_dir%/src/Controller"
+            ])
             ->validate()->always(function ($value) {
                 $this->validateOptionType('symfrop_bundle.resources_info', $value, 'array');
                 foreach ($value as $k => $v) {
