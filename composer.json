@@ -41,5 +41,8 @@
     "symfony/security-bundle": "^6.1",
     "twig/extra-bundle": "^3.4",
     "symfony/console": "^6.1"
+  },
+  "scripts": {
+    "post-package-install": "Njeaner\\Symfrop\\Composer\\InstallationScripts::postPackageInstall"
   }
 }
