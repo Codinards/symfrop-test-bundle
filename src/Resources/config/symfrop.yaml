@@ -1,4 +1,4 @@
-symfrop:
+symfrop_bundle:
   resources_info:
     App/Controller:  '%kernel.project_dir%/src/Controller'
   entities:
