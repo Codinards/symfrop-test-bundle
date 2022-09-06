@@ -31,6 +31,9 @@ class SymfropBundleExtension extends Extension
         $loader->load('services.php');
         $configuration = $this->getConfiguration($configs, $container);
         $this->configs = $this->processConfiguration($configuration, $configs);
+        if (!file_exists(dirname(__DIR__) . '/Resources/cache')) {
+            mkdir(dirname(__DIR__) . '/Resources/cache');
+        }
         file_put_contents(dirname(__DIR__) . '/Resources/cache/configs.json', json_encode($this->configs));
     }
 

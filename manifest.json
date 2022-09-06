@@ -1,0 +1,11 @@
+{
+  "bundles": {
+    "Njeaner\\Symfrop\\SymfropBundle": ["all"]
+  },
+  "copy-from-package": {
+    "src/Resources/config": "%CONFIG_DIR%/packages/",
+    "src/config/routes": "%CONFIG_DIR%/routes/"
+  },
+  "aliases": ["symfrop-bundle"],
+  "gitignore": ["/vendor/", "/public/", "/var/", "/configs/", "/var/"]
+}
