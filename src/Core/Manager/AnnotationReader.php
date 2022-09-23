@@ -9,9 +9,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Error;
 use Exception;
+use Njeaner\Symfrop\Controller\SymfropController;
 use Njeaner\Symfrop\Core\Annotation\RouteActionInterface;
 use Njeaner\Symfrop\Core\Manager\Exceptions\AnnotationReaderException;
 use Njeaner\Symfrop\Core\Service\Config;
+use Njeaner\Symfrop\Core\Service\CONSTANTS;
 use Njeaner\Symfrop\DependencyInjection\SymfropBundleExtension;
 use Njeaner\Symfrop\Entity\Contract\ActionInterface;
 use Njeaner\Symfrop\Entity\Contract\RoleInterface;
@@ -22,14 +24,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * @author Jean Fils de Ntouoka 2 <nguimjeaner@gmail.com>
- * @version 0.0.1
+ * @version 1.0.0
  */
 class AnnotationReader
 {
     /**
      * @var Collection
      */
-    protected Collection $annotations;
+    private Collection $annotations;
 
     /**
      * @var EntityManagerInterface
@@ -43,6 +45,18 @@ class AnnotationReader
     private array $configs = [];
 
     private ?Config $config = null;
+
+    private  array $symfropDefaultAction = [
+        CONSTANTS::ROLE_INDEX,
+        CONSTANTS::USER_INDEX,
+        CONSTANTS::ROLE_CREATE,
+        CONSTANTS::ROLE_UPDATE,
+        CONSTANTS::ROLE_DELETE,
+        CONSTANTS::USER_ROLE_EDIT,
+        CONSTANTS::ACTION_EDIT,
+    ];
+
+    private array $symfropResolveName = [];
 
     public function __construct(
         EntityManagerInterface $manager,
@@ -66,7 +80,7 @@ class AnnotationReader
     public function readUserActionAnnotations()
     {
         $resources = $this->getControllerFilenames();
-        $this->iterateDirectory(dirname(dirname(__DIR__)) . '/Controller', 'Njeaner\Symfrop\Controller');
+
         foreach ($resources as $namespace => $path) {
             if (is_array($path)) {
                 dd("This functionnality is not made yet");
@@ -78,6 +92,8 @@ class AnnotationReader
                 }
             }
         }
+
+        $this->iterateDirectory(dirname(dirname(__DIR__)) . '/Controller', 'Njeaner\Symfrop\Controller');
 
         return $this->manager->getRepository(
             Config::getInstance()->getActionEntity()
@@ -178,55 +194,33 @@ class AnnotationReader
                         );
                     }
                     $userActionName = ($globalName ?? '') . $annotationUserAction->getName();
-                    if (null === ($userAction = $this->manager->getRepository(
-                        Config::getInstance()->getActionEntity()
-                    )->findOneBy(['name' => $userActionName]))) {
-                        /** @var ActionInterface $userAction */
-                        $userAction = $this->resolveEntity(
-                            Config::getInstance()->getActionEntity(),
-                            ActionInterface::class
-                        );
-                        $userAction->setName($userActionName);
-                        $userAction->setTitle(
-                            $annotationUserAction->getTitle() ?? $userAction->getName()
-                        );
-                        $userAction->setIsUpdatable($globalIsUpdatable == false ? $globalIsUpdatable : $annotationUserAction->getIsUpdatable());
-                        $userAction->setHasAuth($globalHasAuth == false ? $globalHasAuth : $annotationUserAction->getHasAuth());
-                        $userAction->setIsIndex($annotationUserAction->getIsIndex());
-                        $userAction->setCondition($annotationUserAction->getActionCondition() ?? $globalCondition);
-                        $userAction->setConditionOption($annotationUserAction->getConditionOption() ?? $globalConditionOption);
-                        $roles = $this->manager->getRepository(
-                            Config::getInstance()->getRoleEntity()
-                        )->findAll();
-
-                        if (empty($roles)) {
-                            throw new AnnotationReaderException(
-                                "Any " . Config::getInstance()->getRoleEntity() . ' find in database.'
+                    if ($classname === SymfropController::class and !in_array($userActionName, $this->symfropResolveName)) {
+                        if (null === ($userAction = $this->manager->getRepository(
+                            Config::getInstance()->getActionEntity()
+                        )->findOneBy(['name' => $userActionName]))) {
+                            /** @var ActionInterface $userAction */
+                            $userAction = $this->resolveEntity(
+                                Config::getInstance()->getActionEntity(),
+                                ActionInterface::class
                             );
-                        }
-                        $targets = $annotationUserAction->getTarget();
-                        if (empty($target)) {
-                            if (!empty($globalTarget)) {
-                                $target = $globalTarget;
-                            } else {
-                                $target = array_keys(Config::getInstance()->getRoles());
+                            $userAction->setName($userActionName);
+                            $userAction->setTitle(
+                                $annotationUserAction->getTitle() ?? $userAction->getName()
+                            );
+                            $userAction->setIsUpdatable($globalIsUpdatable == false ? $globalIsUpdatable : $annotationUserAction->getIsUpdatable());
+                            $userAction->setHasAuth($globalHasAuth == false ? $globalHasAuth : $annotationUserAction->getHasAuth());
+                            $userAction->setIsIndex($annotationUserAction->getIsIndex());
+                            $userAction->setCondition($annotationUserAction->getActionCondition() ?? $globalCondition);
+                            $userAction->setConditionOption($annotationUserAction->getConditionOption() ?? $globalConditionOption);
+                            $roles = $this->manager->getRepository(
+                                Config::getInstance()->getRoleEntity()
+                            )->findAll();
+
+                            if (empty($roles)) {
+                                throw new AnnotationReaderException(
+                                    "Any " . Config::getInstance()->getRoleEntity() . ' find in database.'
+                                );
                             }
-                        }
-                        /** @var RoleInterface $role */
-                        foreach ($roles as $role) {
-                            foreach ($targets as $target) {
-                                if ($target === $role->getName()) {
-                                    $role->addAction($userAction);
-                                }
-                            }
-                            $this->manager->persist($userAction);
-                        }
-                    } else {
-                        if ($annotationUserAction->getIsUpdated() === true || $globalIsUpdated === true) {
-                            /** @var ActionInterface */
-                            $userAction = $annotationUserAction->updateAction($userAction);
-                        }
-                        if ($annotationUserAction->getUpdatedRole() || $globalUpdatedRole === true) {
                             $targets = $annotationUserAction->getTarget();
                             if (empty($target)) {
                                 if (!empty($globalTarget)) {
@@ -235,40 +229,67 @@ class AnnotationReader
                                     $target = array_keys(Config::getInstance()->getRoles());
                                 }
                             }
-                            $rolesNames = [];
-                            $roles = $this->manager->getRepository(
-                                Config::getInstance()->getRoleEntity()
-                            )->createQueryBuilder('__roles__')->where(':action MEMBER OF __roles__.actions')
-                                ->setParameter('action', $userAction)
-                                ->getQuery()->getResult();
-                            /** @var RoleInterface */
+                            /** @var RoleInterface $role */
                             foreach ($roles as $role) {
-                                if (!in_array($role->getName(), $targets)) {
-                                    $rolesNames[] = $role->getName();
-                                    $role->removeAction($userAction);
+                                foreach ($targets as $target) {
+                                    if ($target === $role->getName()) {
+                                        $role->addAction($userAction);
+                                    }
                                 }
+                                $this->manager->persist($userAction);
                             }
-
-                            foreach ($rolesNames as $name) {
-                                if (in_array($name, $targets)) {
-                                    unset($targets[array_search($name, $targets)]);
+                        } else {
+                            if ($annotationUserAction->getIsUpdated() === true || $globalIsUpdated === true) {
+                                /** @var ActionInterface */
+                                $userAction = $annotationUserAction->updateAction($userAction);
+                            }
+                            if ($annotationUserAction->getUpdatedRole() || $globalUpdatedRole === true) {
+                                $targets = $annotationUserAction->getTarget();
+                                if (empty($target)) {
+                                    if (!empty($globalTarget)) {
+                                        $target = $globalTarget;
+                                    } else {
+                                        $target = array_keys(Config::getInstance()->getRoles());
+                                    }
                                 }
-                            }
-                            if (!empty($targets)) {
-                                /** @var ServiceEntityRepository */
-                                $repo = $this->manager->getRepository(
+                                $rolesNames = [];
+                                $roles = $this->manager->getRepository(
                                     Config::getInstance()->getRoleEntity()
-                                );
-                                $roles = $repo->createQueryBuilder('__roles__')
-                                    ->where('__roles__.name IN (' . implode(', ', array_map(fn ($item) => ':_' . $item, array_keys($targets))) . ')')
-                                    ->setParameters(array_combine(array_map(fn ($item) => (string)('_' . $item), array_keys($targets)), $targets))
-                                    ->getQuery()
-                                    ->getResult();
-
+                                )->createQueryBuilder('__roles__')->where(':action MEMBER OF __roles__.actions')
+                                    ->setParameter('action', $userAction)
+                                    ->getQuery()->getResult();
                                 /** @var RoleInterface */
                                 foreach ($roles as $role) {
-                                    $role->addAction($userAction);
+                                    if (!in_array($role->getName(), $targets)) {
+                                        $rolesNames[] = $role->getName();
+                                        $role->removeAction($userAction);
+                                    }
                                 }
+
+                                foreach ($rolesNames as $name) {
+                                    if (in_array($name, $targets)) {
+                                        unset($targets[array_search($name, $targets)]);
+                                    }
+                                }
+                                if (!empty($targets)) {
+                                    /** @var ServiceEntityRepository */
+                                    $repo = $this->manager->getRepository(
+                                        Config::getInstance()->getRoleEntity()
+                                    );
+                                    $roles = $repo->createQueryBuilder('__roles__')
+                                        ->where('__roles__.name IN (' . implode(', ', array_map(fn ($item) => ':_' . $item, array_keys($targets))) . ')')
+                                        ->setParameters(array_combine(array_map(fn ($item) => (string)('_' . $item), array_keys($targets)), $targets))
+                                        ->getQuery()
+                                        ->getResult();
+
+                                    /** @var RoleInterface */
+                                    foreach ($roles as $role) {
+                                        $role->addAction($userAction);
+                                    }
+                                }
+                            }
+                            if (in_array($userActionName, $this->symfropDefaultAction)) {
+                                $this->symfropResolveName[$userActionName] = $userActionName;
                             }
                         }
                     }

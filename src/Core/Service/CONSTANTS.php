@@ -4,7 +4,7 @@ namespace Njeaner\Symfrop\Core\Service;
 
 /**
  * @author Jean Fils de Ntouoka 2 <nguimjeaner@gmail.com>
- * @version 0.0.1
+ * @version 1.0.0
  */
 enum CONSTANTS
 {
@@ -46,4 +46,12 @@ enum CONSTANTS
         'role_entity' => 'Njeaner\Symfrop\Entity\Role',
         'action_entity' => 'Njeaner\Symfrop\Entity\Action'
     ];
+
+    const ROLE_INDEX = 'njeaner_symfrop_role_index';
+    const USER_INDEX = 'njeaner_symfrop_user_index';
+    const ROLE_CREATE = 'njeaner_symfrop_role_create';
+    const ROLE_UPDATE = 'njeaner_symfrop_role_update';
+    const ROLE_DELETE = 'njeaner_symfrop_role_delete';
+    const USER_ROLE_EDIT = 'njeaner_symfrop_user_role_edit';
+    const ACTION_EDIT = 'njeaner_symfrop_action_edit';
 }

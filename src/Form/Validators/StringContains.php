@@ -5,7 +5,8 @@ namespace Njeaner\Symfrop\Form\Validators;
 use Symfony\Component\Validator\Constraint;
 
 /**
- * Annotation
+ * @author Jean Fils de Ntouoka 2 <nguimjeaner@gmail.com>
+ * @version 1.0.0
  */
 class StringContains extends Constraint
 {

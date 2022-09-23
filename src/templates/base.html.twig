@@ -59,7 +59,7 @@
             }
 
             .symfrop-width-2{
-                width: 25vw;
+                width: 50vw;
             }
             
             .symfrop-bg-dark{
@@ -87,8 +87,6 @@
 
             .symfrop-card{
                 width: 100%;
-                /*padding: 4px;
-                background-color: #00ffff;*/
                 background-color: rgba(26, 100, 32, 0.4);
                 min-height: 50px;
                 border-radius: 5px;
@@ -111,7 +109,6 @@
             .symfrop-card-footer{
                 font-size: 1.2rem;
                 padding: 4px;
-                /*background-color: #50cece;*/
                 border-radius: 0px 0px 5px 5px;
                 min-height: 30px;
                 display: flex;
@@ -134,7 +131,6 @@
                 width: 100%;
                 height: 1.2rem;
                 border-radius: 5px;
-                /* background-color:rgba(50, 50, 50, 0.05); */
             }
 
             .symfrop-btn{
@@ -269,7 +265,9 @@
         {% if navbar_top %}
             {{ include(navbar_top)  }}
         {% endif %}
+        {% set routename = 'njeaner_symfrop_role_create' %}
         <div class="symfrop-container" >
+
         {% block body %}{% endblock %}
         </div>
         {% if navbar_bottom %}

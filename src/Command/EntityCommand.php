@@ -14,7 +14,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * @author Jean Fils de Ntouoka 2 <nguimjeaner@gmail.com>
- * @version 0.0.1
+ * @version 1.0.0
  */
 #[AsCommand(
     name: 'symfrop:entities',
@@ -72,10 +72,8 @@ class EntityCommand extends Command
             mkdir($authFolder);
         }
         foreach (['User.txt', 'Role.txt', 'Action.txt'] as $file) {
-            copy(
-                dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Entity' . DIRECTORY_SEPARATOR . $file,
-                $authFolder . DIRECTORY_SEPARATOR . str_replace('.txt', '.php', $file)
-            );
+            $content = str_replace('$authFolder', $auth_dir ? '\\' . $auth_dir : '', file_get_contents(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Entity' . DIRECTORY_SEPARATOR . $file));
+            file_put_contents($authFolder . DIRECTORY_SEPARATOR . str_replace('.txt', '.php', $file), $content);
         }
 
         $io->info(

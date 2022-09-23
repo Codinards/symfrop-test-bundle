@@ -31,15 +31,17 @@ use Twig\Environment;
 
 /**
  * @author Jean Fils de Ntouoka 2 <nguimjeaner@gmail.com>
- * @version 0.0.1
+ * @version 1.0.0
  */
-#[RouteAction(path: '/symfrop/{_locale<fr|en|es|pt>?en}/', name: 'njeaner_symfrop_')]
+#[RouteAction(path: '/symfrop/{_locale<fr|en|es|pt>?en}/'/*, name: self::BASE_NAME*/)]
 class SymfropController extends AbstractController
 {
 
     protected ?Config $config = null;
 
     static $TEMPLATE = '@Symfrop/roles';
+
+    // const BASE_NAME = 'njeaner_symfrop_';
 
     public function __construct(
         private FormFactoryInterface $formFactory,
@@ -69,7 +71,7 @@ class SymfropController extends AbstractController
 
     #[RouteAction(
         path: 'roles/index',
-        name: 'role_index',
+        name: CONSTANTS::ROLE_INDEX,
         methods: ['GET'],
         title: 'symfrop role index page action',
         target: CONSTANTS::ROLE_ALL_ADMINS,
@@ -86,7 +88,7 @@ class SymfropController extends AbstractController
 
     #[RouteAction(
         path: 'users/index',
-        name: 'user_index',
+        name: CONSTANTS::USER_INDEX,
         methods: ['GET'],
         title: 'symfrop user index page action',
         target: CONSTANTS::ROLE_ALL_ADMINS,
@@ -106,7 +108,7 @@ class SymfropController extends AbstractController
 
     #[RouteAction(
         path: 'roles/new',
-        name: 'role_create',
+        name: CONSTANTS::ROLE_CREATE,
         methods: ['GET', "POST"],
         title: 'symfrop role creation page action',
         target: CONSTANTS::ROLE_ALL_ADMINS
@@ -139,7 +141,7 @@ class SymfropController extends AbstractController
 
     #[RouteAction(
         path: 'roles/{role<\d+>}-update',
-        name: 'role_update',
+        name: CONSTANTS::ROLE_UPDATE,
         methods: ['GET', 'POST'],
         title: 'symfrop role update page action',
         target: CONSTANTS::ROLE_ALL_ADMINS
@@ -173,7 +175,7 @@ class SymfropController extends AbstractController
 
     #[RouteAction(
         path: 'roles/{role<\d+>}-delete',
-        name: 'role_delete',
+        name: CONSTANTS::ROLE_DELETE,
         methods: ['POST'],
         title: 'symfrop role delete page action',
         target: CONSTANTS::ROLE_SUPERADMIN
@@ -220,7 +222,7 @@ class SymfropController extends AbstractController
 
     #[RouteAction(
         path: 'roles/{user<\d+>}-user-role-edit',
-        name: 'user_role_edit',
+        name: CONSTANTS::USER_ROLE_EDIT,
         methods: ['GET', 'POST'],
         title: 'symfrop user role edit page action',
         target: CONSTANTS::ROLE_SUPERADMIN,
@@ -256,8 +258,8 @@ class SymfropController extends AbstractController
 
     #[RouteAction(
         path: 'roles/{action<\d+>}-action-edit',
-        name: 'action_edit',
-        title: 'symfrop action page action',
+        name: CONSTANTS::ACTION_EDIT,
+        title: 'symfrop action edit page action',
         target: CONSTANTS::ROLE_ALL_ADMINS
     )]
     public function actionEdit(Request $request, int $action): Response

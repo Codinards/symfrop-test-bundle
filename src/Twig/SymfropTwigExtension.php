@@ -10,13 +10,15 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
 use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
 use Twig\TwigFunction;
+use Twig\TwigTest;
 
 /**
- * The symfrop twig bundle
+ * The symfrop bundle twig extension
  *
  * @author Jean Fils de Ntouoka 2 <nguimjeaner@gmail.com>
- * @version 0.0.1
+ * @version 1.0.0
  */
 class SymfropTwigExtension extends AbstractExtension
 {
@@ -34,6 +36,7 @@ class SymfropTwigExtension extends AbstractExtension
         private Environment $twig
     ) {
         self::$instance = $this;
+        $twig->addGlobal('annotationManager', $annotationManager);
     }
 
     public function getFunctions(): array
@@ -43,8 +46,7 @@ class SymfropTwigExtension extends AbstractExtension
             // parameter: ['is_safe' => ['html']]
             // Reference: https://twig.symfony.com/doc/2.x/advanced.html#automatic-escaping
             new TwigFunction('create_symfrop_link', [$this, 'link'], ['is_safe' => ['html']]),
-            new TwigFunction('create_symfrop_link_default', [$this, 'linkDefault'], ['is_safe' => ['html']]),
-            new TwigFunction('create_symfrop_form', [$this, 'form'], ['is_safe' => ['html']]),
+            new TwigFunction('create_symfrop_default_link', [$this, 'defaultLink'], ['is_safe' => ['html']]),
             new TwigFunction('__', [$this, '__']),
             new TwigFunction('__U', [$this, '__u']),
             new TwigFunction('_U', [$this, '__u']),
@@ -54,8 +56,29 @@ class SymfropTwigExtension extends AbstractExtension
             new TwigFunction('_T', [$this, '__t']),
             new TwigFunction('__t', [$this, '__t']),
             new TwigFunction('__T', [$this, '__t']),
-            new TwigFunction('merge', 'array_merge'),
+            new TwigFunction('merge', 'twig_array_merge'),
         ];
+    }
+
+
+    public function getTests()
+    {
+        return [
+            new TwigTest('authorized action', [$this, 'isAuthorize']),
+        ];
+    }
+
+
+    public function getTokenParsers(): array
+    {
+        return [
+            new SymfropFormTokenParser($this->annotationManager)
+        ];
+    }
+
+    public function isAuthorize(string $routeName): bool
+    {
+        return $this->annotationManager->isAuthorize($routeName);
     }
 
     public function link(
@@ -64,73 +87,37 @@ class SymfropTwigExtension extends AbstractExtension
         array $params = [],
         array $options = []
     ): bool|string {
-        $returnBool = $options['boolean'] ?? false;
-        $valid = $options['valid'] ?? true;
-        if ($valid) {
-            $isAuthorize = $this->annotationManager->isAuthorize($path);
+        $isAuthorize = $this->annotationManager->isAuthorize($path);
 
-            if ((int) $isAuthorize === 1) {
-                if ($returnBool) return true;
-                $title = $options['title'] ?? false;
-                $style = $options['style'] ?? null;
-                try {
+        if ($isAuthorize === true) {
+            try {
 
-                    if (!isset($params['_locale'])) {
-                        $params['_locale'] = $this->getRequestLocale();
-                    }
-
-                    $route = $this->router->generate($path, $params);
-                } catch (\Exception $e) {
-                    throw new SymfropBaseException($e->getMessage());
+                if (!isset($params['_locale'])) {
+                    $params['_locale'] = $this->getRequestLocale();
                 }
-                $class = isset($options['class']) ? 'class="' . $options['class'] . '"' : '';
-                $style = $style ? 'style="' . $options['style'] . '"' : '';
-                $title = $title ? 'title="' . $title . '"' : '';
-                $label = is_array($label) ? $label[0] : $label;
-                return "<a href='{$route}' {$class} {$style} {$title}>{$label}</a>";
+
+                $route = $this->router->generate($path, $params);
+            } catch (\Exception $e) {
+                throw new SymfropBaseException($e->getMessage());
             }
+            $attrs = '';
+            foreach ($options as $key => $attr) {
+                $attrs .=  $key . '="' . $attr . '" ';
+            }
+            $label = is_array($label) ? $label[0] : $label;
+            return '<a href="' . $route . '" ' . $attrs . ' >' . $label . '</a>';
         }
-        return $returnBool ? false : (is_array($label) ? $label[0] : '');
+
+        return '';
     }
 
-    public function linkDefault(
+    public function defaultLink(
         string $path,
         string $label,
         array $params = [],
         array $options = []
     ): bool|string {
         return $this->link($path, [$label, $label], $params, $options);
-    }
-
-    public function form($name, string $label, $params = [], array $options = [], string $methods = 'post')
-    {
-        if (isset($options['valid']) and $options['valid'] === false) return '';
-        $form_attr = '';
-        foreach ($options['attr'] ?? [] as $key => $attr) {
-            $form_attr .=  $key . '="' . $attr . '" ';
-        }
-
-        $button_attr = '';
-        foreach ($options['btn_attr'] ?? [] as $key => $attr) {
-            $button_attr .=  $key . '="' . $attr . '" ';
-        }
-
-        if ($this->annotationManager->isAuthorize($name)) {
-
-            if (!isset($params['_locale'])) {
-                $params['_locale'] = $this->getRequestLocale();
-            }
-
-            $path = $this->router->generate($name, $params);
-            $confirm = isset($options['onSubmit']) ? ' onSubmit =" return confirm(\'' . $options['onSubmit'] . '\')"'  : '';
-            $csrf_value = ($options['csrf_name'] ?? null) ? 'value="' . $this->tokenManager->getToken($options['csrf_name'])->getValue() . '"' : '';
-
-            return "<form action='$path' method='$methods' " . trim($form_attr)  . $confirm  . ">
-            <input type='hidden' name='_csrf_token'  $csrf_value/> 
-            <button " . trim($button_attr) . ">$label</button>
-            </form>";
-        }
-        return '';
     }
 
     public function __(string $id, $parameters = [], ?string $domain = null, ?string $locale = null): string

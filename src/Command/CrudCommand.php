@@ -37,7 +37,7 @@ use Symfony\Component\Validator\Validation;
 
 /**
  * @author Jean Fils de Ntouoka 2 <nguimjeaner@gmail.com>
- * @version 0.0.1
+ * @version 1.0.0
  */
 #[AsCommand(
     name: 'symfrop:crud',
