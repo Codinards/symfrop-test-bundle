@@ -7,7 +7,8 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
 /**
- * Annotation
+ * @author Jean Fils de Ntouoka 2 <nguimjeaner@gmail.com>
+ * @version 1.0.0
  */
 class NotEmptyValidator extends ConstraintValidator
 {

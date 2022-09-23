@@ -31,7 +31,7 @@ use Twig\Environment;
 
 /**
  * @author Jean Fils de Ntouoka 2 <nguimjeaner@gmail.com>
- * @version 0.0.1
+ * @version 1.0.0
  */
 #[RouteAction(path: '/symfrop/{_locale<fr|en|es|pt>?en}/', name: 'njeaner_symfrop_')]
 class SymfropController extends AbstractController
@@ -257,7 +257,7 @@ class SymfropController extends AbstractController
     #[RouteAction(
         path: 'roles/{action<\d+>}-action-edit',
         name: 'action_edit',
-        title: 'symfrop action page action',
+        title: 'symfrop action edit page action',
         target: CONSTANTS::ROLE_ALL_ADMINS
     )]
     public function actionEdit(Request $request, int $action): Response

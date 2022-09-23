@@ -28,6 +28,10 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Security\Core\Security;
 
+/**
+ * @author Jean Fils de Ntouoka 2 <nguimjeaner@gmail.com>
+ * @version 1.0.0
+ */
 class SymfropTest extends WebTestCase
 {
     private ?EntityManagerInterface $manager = null;

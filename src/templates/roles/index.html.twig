@@ -85,20 +85,14 @@
                             </div>
                             <div class="symfrop-card-footer symfrop-text-center">
                                 {% if role.name != 'ROLE_SUPERADMIN' %}
-                                    {{ create_symfrop_link('njeaner_symfrop_role_update', __u('Editer'), {role: role.id}, {class:"btn btn-primary"}) }}
+                                    {{ create_symfrop_link('njeaner_symfrop_role_update', __u('Edit'), {role: role.id}, {class:"symfrop-btn symfrop-btn-primary"}) }}
                                 {% endif %}
-                                {% if role.isDeletable %}
-                                {{ create_symfrop_form(
-                                    'njeaner_symfrop_role_delete',
-                                    __u('Delete'),
-                                    {role: role.id},
-                                    { 
-                                        attr: {style: "display: inline-block;font-size:1.2rem;"},
-                                        btn_attr: {class: "symfrop-btn symfrop-btn-danger", style: "min-height: 30px;margin-left:10px;"},
-                                        csrf_name: 'symfrop_role_delete',
-                                        confirm: __u('Are you sure to delete the role') ~ ' ' ~ __(role.name) ~ '?'
-                                    }
-                                ) }}
+                                {% if role.isDeletable and annotationManager.isAuthorize('njeaner_symfrop_role_delete') %}
+                                {% set confirmMessage = __u('Are you sure to delete the role') ~ ' ' ~ __(role.name) ~ '?' %}
+                                        <form action="{{ path('njeaner_symfrop_role_delete', {role: role.id} ) }}" method="post" style="display: inline-block;" onSubmit="return confirm({{ confirmMessage }})">
+                                            <input type="hidden" name="_csrf_token" value="csrf_token('symfrop_role_delete')">
+                                            <button type="submit" class="symfrop-btn symfrop-btn-danger" style="min-height: 30px;margin-left:10px;font-size:1.1rem;">{{ __u('Delete') }}</button>
+                                        </form>
                                 {% endif %}
                             </div>
                         </div>

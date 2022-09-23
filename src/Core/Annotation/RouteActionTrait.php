@@ -7,6 +7,10 @@ use Njeaner\Symfrop\Core\Service\Config;
 use Njeaner\Symfrop\Core\Service\CONSTANTS;
 use Njeaner\Symfrop\Entity\Contract\ActionInterface;
 
+/**
+ * @author Jean Fils de Ntouoka 2 <nguimjeaner@gmail.com>
+ * @version 1.0.0
+ */
 trait RouteActionTrait
 {
     static $ALL = [];

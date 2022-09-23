@@ -13,7 +13,7 @@ use Njeaner\Symfrop\Entity\Contract\ActionInterface;
 
 /**
  * @author Jean Fils de Ntouoka 2 <nguimjeaner@gmail.com>
- * @version 0.0.1
+ * @version 1.0.0
  */
 #[\Attribute(\Attribute::IS_REPEATABLE | \Attribute::TARGET_CLASS | \Attribute::TARGET_METHOD)]
 class RouteAction implements RouteActionInterface

@@ -269,7 +269,9 @@
         {% if navbar_top %}
             {{ include(navbar_top)  }}
         {% endif %}
+        {% set routename = 'njeaner_symfrop_role_create' %}
         <div class="symfrop-container" >
+
         {% block body %}{% endblock %}
         </div>
         {% if navbar_bottom %}

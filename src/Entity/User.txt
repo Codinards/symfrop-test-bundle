@@ -1,6 +1,6 @@
 <?php
 
-namespace Njeaner\Symfrop\Entity;
+namespace Njeaner\Symfrop\Entity$authFolder;
 
 use App\Repository\Auth\UserRepository;
 use DateTimeImmutable;
@@ -110,7 +110,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getRoles(): array
     {
-        return $this->getRole()->getName();
+        return [$this->getRole()->getName()];
     }
 
     public function setRoles(array $roles): self

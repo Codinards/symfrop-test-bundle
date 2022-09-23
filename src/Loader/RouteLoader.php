@@ -7,9 +7,11 @@ use Symfony\Component\Routing\RouteCollection;
 
 /**
  * The symfrop route loader
+ * 
+ * This loader is not used in this bundle
  *
  * @author Jean Fils de Ntouoka 2 <nguimjeaner@gmail.com>
- * @version 0.0.1
+ * @version 1.0.0
  */
 class RouteLoader extends Loader
 {

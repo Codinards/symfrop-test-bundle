@@ -8,6 +8,10 @@ use Njeaner\Symfrop\Core\Service\CONSTANTS;
 use Njeaner\Symfrop\Entity\Contract\ActionInterface;
 use Njeaner\Symfrop\Entity\Contract\UserInterface;
 
+/**
+ * @author Jean Fils de Ntouoka 2 <nguimjeaner@gmail.com>
+ * @version 1.0.0
+ */
 class AuthCondition
 {
     static $index = 0;

@@ -1,0 +1,33 @@
+user: utilisateur
+admin: admin
+administrator: administrateur
+root: superadmin
+title: titre
+name: nom
+'true': 'vrai'
+'false': 'faux'
+create: créer
+edit: éditer
+delete: supprimer
+remove: supprimer
+action: action
+isupdatable: peut être modifier
+is_updatable: peut être modifier
+isdeletable: peut être supprimer
+is_deletable: peut être supprimer
+hasauth: doit être authentifier
+has_auth: doit être authentifier
+isindex: est un index
+is_index: est un index
+role_user: rôle utilisateur
+role_admin: rôle administrateur
+role_superadmin: rôle super administrateur
+symfrop role index page action: action, index symfrop des rôles
+symfrop user index page action: action, index symfrop des utilisateurs
+symfrop role creation page action: action, création symfrop d'un rôle
+symfrop role update page action: action, édition symfrop d'un rôle
+symfrop role delete page action: action, suppression symfrop un rôle
+symfrop user role edit page action: action, édition symfrop du rôle d'un utilisateur
+symfrop action edit page action: action, édition symfrop d'une action utilisateur
+add new role: ajouter un nouveau rôle
+all users: list des utilisateurs

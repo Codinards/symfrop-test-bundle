@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 
 /**
  * @author Jean Fils de Ntouoka 2 <nguimjeaner@gmail.com>
- * @version 0.0.1
+ * @version 1.0.0
  */
 class SymfropBundleExtension extends Extension
 {

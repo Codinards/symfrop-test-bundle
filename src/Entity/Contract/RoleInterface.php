@@ -4,6 +4,10 @@ namespace Njeaner\Symfrop\Entity\Contract;
 
 use Doctrine\Common\Collections\Collection;
 
+/**
+ * @author Jean Fils de Ntouoka 2 <nguimjeaner@gmail.com>
+ * @version 1.0.0
+ */
 interface RoleInterface
 {
     /**

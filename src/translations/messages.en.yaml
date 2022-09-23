@@ -1,1 +1,34 @@
-app_auth_user: user roles index
+user: usager
+admin: admin
+administrator: administrator
+root: superadmin
+title: title
+name: name
+'true': 'true'
+'false': 'false'
+create: create
+edit: edit
+delete: delete
+remove: remove
+action: action
+isupdatable: is updatable
+is_updatable: is updatable
+isdeletable: is deletable
+is_deletable: is deletable
+hasauth: has auth
+has_auth: has auth
+isindex: is index
+is_index: is index
+role_user: user role
+role_admin: admin role
+role_superadmin: superadmin role
+symfrop role index page action: symfrop role index action
+symfrop user index page action: symfrop user index action
+symfrop role creation page action: symfrop role creation action
+symfrop role update page action: symfrop role update action
+symfrop role delete page action: symfrop role delete action
+symfrop user role edit page action: symfrop user role edition action
+symfrop action edit page action: symfrop user action edition action
+users index action: users index action
+add new role: add new role
+all users: users list
