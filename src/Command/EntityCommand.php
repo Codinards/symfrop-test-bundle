@@ -54,34 +54,37 @@ class EntityCommand extends Command
             . DIRECTORY_SEPARATOR . 'Entity'
             . DIRECTORY_SEPARATOR . $auth_dir;
 
-        if (file_exists($authFolder)) {
-            if (
-                (file_exists($authFolder . DIRECTORY_SEPARATOR . 'user.php')
-                    || file_exists($authFolder . DIRECTORY_SEPARATOR . 'action.php')
-                    || file_exists($authFolder . DIRECTORY_SEPARATOR . 'role.php'))
-                && !$overWrite
-            ) {
-                $io->error(
-                    'The directory '
-                        . $authFolder
-                        . ' already exists with User.php, Action.php or Role.php entity files'
-                );
-                return Command::FAILURE;
-            }
-        } else {
+        $repositoryFolder = $this->kernel->getProjectDir()
+            . DIRECTORY_SEPARATOR . 'src'
+            . DIRECTORY_SEPARATOR . 'Repository'
+            . DIRECTORY_SEPARATOR . $auth_dir;
+
+        if (!file_exists($authFolder)) {
             mkdir($authFolder);
         }
-        foreach (['User.txt', 'Role.txt', 'Action.txt'] as $file) {
-            $content = str_replace('$authFolder', $auth_dir ? '\\' . $auth_dir : '', file_get_contents(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Entity' . DIRECTORY_SEPARATOR . $file));
-            file_put_contents($authFolder . DIRECTORY_SEPARATOR . str_replace('.txt', '.php', $file), $content);
+
+        if (!file_exists($repositoryFolder)) {
+            mkdir($repositoryFolder);
+        }
+
+        foreach (['User', 'Role', 'Action'] as $file) {
+            $content = str_replace('$authFolder', $auth_dir ? ('\\' . $auth_dir) : '', file_get_contents(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Entity' . DIRECTORY_SEPARATOR . $file . '.txt'));
+            file_put_contents($authFolder . DIRECTORY_SEPARATOR . $file . '.php', $content);
+            $content = str_replace('$authFolder', ($auth_dir ? ('\\' . $auth_dir) : ''), file_get_contents(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Repository' . DIRECTORY_SEPARATOR . $file . 'Repository.txt'));
+            $content = str_replace('$namespace$', 'App\Entity' . ($auth_dir ? ('\\' . $auth_dir) : '') . '\\' . $file, $content);
+            $content = str_replace('$entity_name$', $file, $content);
+            file_put_contents($repositoryFolder . DIRECTORY_SEPARATOR . $file . 'Repository.php', $content);
         }
 
         $io->info(
             "Symfrop auth entity Files have been created in Entity" . DIRECTORY_SEPARATOR . $auth_dir . " directory\n\n"
                 . "Created:"
-                . "\n\tEntity" . DIRECTORY_SEPARATOR . $auth_dir . DIRECTORY_SEPARATOR . "User.php"
-                . "\n\tEntity" . DIRECTORY_SEPARATOR . $auth_dir . DIRECTORY_SEPARATOR . "Role.php"
-                . "\n\tEntity" . DIRECTORY_SEPARATOR . $auth_dir . DIRECTORY_SEPARATOR . "Action.php"
+                . "\n\tApp\Entity\\" . $auth_dir .  "\User.php\n"
+                . "\tApp\Entity\\" . $auth_dir .  "\Role.php\n"
+                . "\tApp\Entity\\" . $auth_dir .  "\Action.php\n"
+                . "\tApp\Repository\\" . $auth_dir .  "\UserRepository.php\n"
+                . "\tApp\Repository\\" . $auth_dir .  "\RoleRepository.php\n"
+                . "\tApp\Repository\\" . $auth_dir .  "\ActionRepository.php\n"
         );
         return Command::SUCCESS;
     }

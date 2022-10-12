@@ -1,0 +1,5 @@
+The <info>%command.name%</info> generate a symfony crud for an entity( controller, frm and templates).
+
+<info>php %command.full_name% Auth</info>
+
+If the argument is missing, the command will ask for entities folder name interactively.

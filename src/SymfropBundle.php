@@ -3,9 +3,6 @@
 namespace Njeaner\Symfrop;
 
 use Njeaner\Symfrop\DependencyInjection\SymfropBundleExtension;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
@@ -20,6 +17,7 @@ class SymfropBundle extends Bundle
     public function __construct()
     {
         $this->extension = new SymfropBundleExtension($this);
+        $this->getNamespace();
     }
 
     public function getExtension(): SymfropBundleExtension

@@ -75,7 +75,7 @@ class CrudCommand extends Command
     {
         $this
             ->addArgument('entity-class', InputArgument::REQUIRED, sprintf('The class name of the entity to create CRUD (e.g. <fg=yellow>%s</>)', Str::asClassName(Str::getRandomTerm())))
-            ->setHelp(file_get_contents(__DIR__ . '/Resources/help/MakeCrud.txt'));
+            ->setHelp(file_get_contents(__DIR__ . '/Resources/help/MakeSymfropCrud.txt'));
     }
 
     // public function interact(InputInterface $input, ConsoleStyle $io, Command $command): void

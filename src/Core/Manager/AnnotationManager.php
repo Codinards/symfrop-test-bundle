@@ -22,17 +22,13 @@ use Symfony\Component\Security\Core\User\UserInterface as UserUserInterface;
  */
 class AnnotationManager
 {
-
     protected EntityManagerInterface $manager;
 
     protected Config $config;
 
     protected ?UserUserInterface $auth = null;
 
-    /**
-     * @var SavedAction[]
-     */
-    private $routes = [];
+    private array $resolvedConditions = [];
 
     /** @var ActionInterface[] */
     private array $userActions = [];
@@ -55,138 +51,56 @@ class AnnotationManager
             $this->annotationReader->readUserActionAnnotations();
         }
 
-        /** @var SavedAction */
-        if (($action = $this->routes[$routeName] ?? false)) {
-            if ($action->getResponseType() === SavedAction::IS_BOOLEAN_RESPONSE) {
-                if ($action->isAuthChanged($this->getAuth())) {
-                    $userAction = $this->userActions[$routeName];
-                    return $this->getAuth()->hasAction($userAction);
-                }
-                return $action->getPermission();
-            } else {
-                if ($action->getOption() === RouteAction::CONDITION_OVERWRITE) {
-                    return $action->callCondition($this->getAuth());
+        $userAction = $this->getRoleAction($routeName);
+        if ($userAction and $userAction->getHasAuth()) {
+            $auth = $this->getAuth();
+
+            if (($condition = $userAction->getCondition()) !== null) {
+                $condition = $this->resolveCondition($condition, $routeName);
+                $container = $this->annotationReader->getContainer();
+                $request = $this->requestStack->getMainRequest();
+                if ($userAction->getConditionOption() === RouteAction::CONDITION_OVERWRITE) {
+                    return $condition($auth, $userAction, $container, $request);
                 } else {
-                    $auth = $this->getAuth();
-                    if ($action->getOption() === RouteAction::CONDITION_CHECK_ONE) {
-                        return (($auth?->hasAction($this->userActions[$routeName])) ?  true : false)
-                            ||  ($action->callCondition($this->getAuth()));
-                    }
-                    return (($auth?->hasAction($this->userActions[$routeName])) ?  true : false)
-                        && ($action->callCondition($this->getAuth()));
+                    return $condition($auth, $userAction, $container, $request) and $auth?->hasAction($userAction);
                 }
             }
+
+            return $auth?->hasAction($userAction);
         }
-
-        $userAction = $this->manager->getRepository(
-            $this->config->getActionEntity()
-        )->findOneBy(['name' => $routeName]);
-
-        if ($userAction) {
-            $this->userActions[$routeName] = $userAction;
-            /** @var ActionInterface $userAction */
-            if ($userAction->getHasAuth()) {
-                /** @var UserInterface $auth */
-                $auth = $this->getAuth();
-                if (($condition = $userAction->getCondition()) !== null) {
-
-                    $condition = json_decode($condition) ?? $condition;
-                    try {
-                        $object = $this->annotationReader->getContainer()->get(is_string($condition) ? $condition : $condition[0]);
-                    } catch (\Exception) {
-                        try {
-                            $object = new (is_string($condition) ? $condition : $condition[0]);
-                        } catch (\Exception $e) {
-                            throw new SymfropBaseException($e->getMessage());
-                        }
-                    }
-
-                    $container = $this->annotationReader->getContainer();
-                    $request = $this->requestStack->getMainRequest();
-
-                    if (($conditionOption = $userAction->getConditionOption()) === RouteAction::CONDITION_OVERWRITE) {
-                        return $this->ChechAndStoreAuthorized(
-                            $routeName,
-                            $this->chechCondition($condition, $object, $userAction, $container, $request, true, $conditionOption),
-                            $conditionOption
-                        );
-                    } else {
-                        return $this->ChechAndStoreAuthorized(
-                            $routeName,
-                            $this->chechCondition($condition, $object, $userAction, $container, $request, (((bool) $auth?->hasAction($userAction)) ? true : false), $conditionOption),
-                            $conditionOption
-                        );
-                    }
-                } else {
-                    $permission = $this->ChechAndStoreAuthorized($routeName, ((bool) $auth?->hasAction($userAction)) ? true : false, 0);
-                    return $permission;
-                }
-            }
-            return $this->ChechAndStoreAuthorized($routeName, true, 0);
-        }
-        return $this->ChechAndStoreAuthorized($routeName, true, 0);
+        return true;
     }
 
-    private function chechCondition(
-        string|array $condition,
-        object $object,
-        ActionInterface $userAction,
-        ContainerInterface $container,
-        ?Request $request,
-        ?bool $addCondition = null,
-        int $addedOption = RouteAction::CONDITION_AT_TIME
-    ): Closure {
-
-        return function (?UserInterface $auth) use (
-            $condition,
-            $object,
-            $userAction,
-            $container,
-            $request,
-            $addCondition,
-            $addedOption
-        ) {
-            /** @var bool */
-            $resolve = (is_string($condition)
-                ? $object($auth, $userAction, $container, $request)
-                : $object->{$condition[1]}($auth, $userAction, $container, $request));
-
-            if ($addCondition) {
-                if ($addedOption === RouteAction::CONDITION_CHECK_ONE) {
-                    return $addCondition || $resolve;
-                }
-                return $addCondition && $resolve;
-            } else {
-                return $resolve;
-            }
-        };
-    }
-
-    private function ChechAndStoreAuthorized(?string $routeName, bool|Closure $condition, int $option): bool
+    private function resolveCondition(string $condition, string $routeName): Closure
     {
-        $resolve = $condition;
-        if ($routeName === null) {
-            $this->routes[$routeName] = new SavedAction(
-                false,
-                $routeName ?? 'UNDEFINDE_ROUTE_NAME',
-                null,
-                null,
-                null,
-                SavedAction::IS_BOOLEAN_RESPONSE
-            );
-            return false;
+        if ($resolved = ($this->resolvedConditions[$routeName] ?? null)) {
+            return $resolved;
         }
-        $condition = is_bool($resolve) ? $condition : $condition($this->getAuth());
+        $condition = json_decode($condition) ?? $condition;
+        try {
+            $object = $this->annotationReader->getContainer()->get(is_string($condition) ? $condition : $condition[0]);
+        } catch (\Exception) {
+            try {
+                $object = new (is_string($condition) ? $condition : $condition[0]);
+            } catch (\Exception $e) {
+                throw new SymfropBaseException($e->getMessage());
+            }
+        }
+        $this->resolvedConditions[$routeName] = fn (?UserInterface $auth, ActionInterface $userAction, ContainerInterface $container, Request $request) => is_string($condition)
+            ? $object($auth, $userAction, $container, $request)
+            : $object->$condition[0]($auth, $userAction, $container, $request);
+        return $this->resolvedConditions[$routeName];
+    }
 
-        $this->routes[$routeName] = new SavedAction(
-            $condition === true ? true : false,
-            $routeName,
-            $this->getAuth(),
-            is_bool($resolve) ? null : $resolve,
-            is_bool($resolve) ? null : $option,
-            is_bool($resolve) ? SavedAction::IS_BOOLEAN_RESPONSE : SavedAction::IS_CONDITIONAL_RESPONSE
-        );
-        return $condition;
+    private function getRoleAction(?string $routeName): ?ActionInterface
+    {
+        $userAction = $this->userActions[$routeName] ?? null;
+        if ($userAction === null) {
+            $this->userActions[$routeName] = $this->manager->getRepository(
+                $this->config->getActionEntity()
+            )->findOneBy(['name' => $routeName]);
+        }
+        return $this->userActions[$routeName];
     }
 
     public function getAuth(): null|UserUserInterface| UserInterface
@@ -231,64 +145,5 @@ class AnnotationManager
         $this->security = $security;
         $this->auth = $security->getUser();
         return $this;
-    }
-}
-
-
-class SavedAction
-{
-    const IS_BOOLEAN_RESPONSE = 1;
-    const IS_AUTH_RESPONSE = 2;
-    const IS_CONDITIONAL_RESPONSE = 3;
-
-    public function __construct(
-        readonly private bool $permission,
-        readonly private string $route,
-        readonly private ?UserInterface $auth,
-        readonly private ?Closure $condition,
-        readonly private ?int $option,
-        readonly private int $responseType
-    ) {
-    }
-
-    public function getPermission(): bool
-    {
-        return $this->permission;
-    }
-
-    public function getRoute(): string
-    {
-        return $this->route;
-    }
-
-    public function getAuth(): ?UserInterface
-    {
-        return $this->auth;
-    }
-
-    public function getCondition(): ?callable
-    {
-        return $this->condition;
-    }
-
-    public function getOption(): ?int
-    {
-        return $this->option;
-    }
-
-    public function callCondition(UserInterface $auth)
-    {
-        $condition = $this->condition;
-        return $condition($auth);
-    }
-
-    public function getResponseType()
-    {
-        return $this->responseType;
-    }
-
-    public function isAuthChanged(?UserInterface $auth): bool
-    {
-        return $this->auth !== null &&  ($this->auth !== $auth);
     }
 }

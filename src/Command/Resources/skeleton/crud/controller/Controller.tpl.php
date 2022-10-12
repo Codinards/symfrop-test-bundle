@@ -8,7 +8,7 @@ namespace <?= $namespace ?>;
     {
     <?= $generator->generateRouteForControllerMethod('', sprintf('%s_index', $route_name), ['GET']) ?>
     <?php if (isset($repository_full_class_name)) : ?>
-        #[RouteAction('<?= $route_name ?>', '<?= $route_name ?>', CONSTANTS::ROLE_ALL, isIndex: true )]
+        #[RouteAction('<?= $route_name ?>_index', '<?= $route_name ?>_index', CONSTANTS::ROLE_ALL, isIndex: true )]
         public function index(<?= $repository_class_name ?> $<?= $repository_var ?>): Response
         {
         return $this->render('<?= $templates_path ?>/index.html.twig', [
@@ -16,7 +16,7 @@ namespace <?= $namespace ?>;
         ]);
         }
     <?php else : ?>
-        #[RouteAction('<?= $route_name ?>', '<?= $route_name ?>', CONSTANTS::ROLE_ALL, isIndex: true )]
+        #[RouteAction('<?= $route_name ?>_index', '<?= $route_name ?>_index', CONSTANTS::ROLE_ALL, isIndex: true )]
         public function index(EntityManagerInterface $entityManager): Response
         {
         $<?= $entity_var_plural ?> = $entityManager

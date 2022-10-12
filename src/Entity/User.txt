@@ -1,6 +1,6 @@
 <?php
 
-namespace Njeaner\Symfrop\Entity$authFolder;
+namespace App\Entity$authFolder;
 
 use App\Repository\Auth\UserRepository;
 use DateTimeImmutable;
@@ -11,7 +11,6 @@ use Njeaner\Symfrop\Entity\Contract\ActionInterface;
 use Njeaner\Symfrop\Entity\Contract\RoleInterface;
 use Njeaner\Symfrop\Entity\Contract\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-// use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -22,9 +21,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column()]
     private ?int $id = null;
 
-    #[ORM\Column(length: 100, unique: true)]
-    private ?string $pseudo = null;
-
     #[ORM\Column]
     private array $roles = [];
 
@@ -34,38 +30,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(nullable: true)]
     private ?string $password = null;
 
-    #[ORM\Column(length: 150)]
-    private ?string $username = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $address = null;
-
-    #[ORM\Column(length: 18, nullable: true)]
-    private ?string $phoneNumber = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $image = null;
-
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\Column]
-    private ?bool $isLocked = false;
-
-    #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $lockedAt = null;
-
-    #[ORM\ManyToOne(targetEntity: self::class)]
-    private ?self $admin = null;
-
-    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'parraineds')]
-    private ?self $parrain = null;
-
-    #[ORM\OneToMany(mappedBy: 'parrain', targetEntity: self::class)]
-    private Collection $parraineds;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
     #[ORM\JoinColumn(nullable: false)]
@@ -73,7 +43,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function __construct()
     {
-        $this->parraineds = new ArrayCollection();
         $this->setCreatedAt(new DateTimeImmutable());
         $this->setUpdatedAt($this->getCreatedAt());
     }
@@ -83,17 +52,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->id;
     }
 
-    public function getPseudo(): ?string
-    {
-        return $this->pseudo;
-    }
-
-    public function setPseudo(string $pseudo): self
-    {
-        $this->pseudo = $pseudo;
-
-        return $this;
-    }
 
     /**
      * A visual identifier that represents this user.
@@ -102,7 +60,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->pseudo;
+        return '';
     }
 
     /**
@@ -110,7 +68,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getRoles(): array
     {
-        return [$this->getRole()->getName()];
+        return [$this->getRole()?->getName()];
     }
 
     public function setRoles(array $roles): self
@@ -144,54 +102,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // $this->plainPassword = null;
     }
 
-    public function getUsername(): ?string
-    {
-        return $this->username;
-    }
-
-    public function setUsername(string $username): self
-    {
-        $this->username = $username;
-
-        return $this;
-    }
-
-    public function getAddress(): ?string
-    {
-        return $this->address;
-    }
-
-    public function setAddress(?string $address): self
-    {
-        $this->address = $address;
-
-        return $this;
-    }
-
-    public function getPhoneNumber(): ?string
-    {
-        return $this->phoneNumber;
-    }
-
-    public function setPhoneNumber(?string $phoneNumber): self
-    {
-        $this->phoneNumber = $phoneNumber;
-
-        return $this;
-    }
-
-    public function getImage(): ?string
-    {
-        return $this->image;
-    }
-
-    public function setImage(?string $image): self
-    {
-        $this->image = $image;
-
-        return $this;
-    }
-
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
@@ -212,84 +122,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setUpdatedAt(\DateTimeImmutable $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
-
-        return $this;
-    }
-
-    public function isIsLocked(): ?bool
-    {
-        return $this->isLocked;
-    }
-
-    public function setIsLocked(bool $isLocked): self
-    {
-        $this->isLocked = $isLocked;
-
-        return $this;
-    }
-
-    public function getLockedAt(): ?\DateTimeImmutable
-    {
-        return $this->lockedAt;
-    }
-
-    public function setLockedAt(?\DateTimeImmutable $lockedAt): self
-    {
-        $this->lockedAt = $lockedAt;
-
-        return $this;
-    }
-
-    public function getAdmin(): ?self
-    {
-        return $this->admin;
-    }
-
-    public function setAdmin(?self $admin): self
-    {
-        $this->admin = $admin;
-
-        return $this;
-    }
-
-    public function getParrain(): ?self
-    {
-        return $this->parrain;
-    }
-
-    public function setParrain(?self $parrain): self
-    {
-        $this->parrain = $parrain;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, self>
-     */
-    public function getParraineds(): Collection
-    {
-        return $this->parraineds;
-    }
-
-    public function addParrained(self $parrained): self
-    {
-        if (!$this->parraineds->contains($parrained)) {
-            $this->parraineds[] = $parrained;
-            $parrained->setParrain($this);
-        }
-
-        return $this;
-    }
-
-    public function removeParrained(self $parrained): self
-    {
-        if ($this->parraineds->removeElement($parrained)) {
-            // set the owning side to null (unless already changed)
-            if ($parrained->getParrain() === $this) {
-                $parrained->setParrain(null);
-            }
-        }
 
         return $this;
     }
@@ -318,7 +150,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function __toString(): string
     {
-        return $this->username;
+        return $this->getUserIdentifier();
     }
 }
 

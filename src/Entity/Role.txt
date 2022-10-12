@@ -1,6 +1,6 @@
 <?php
 
-namespace Njeaner\Symfrop\Entity$authFolder;
+namespace App\Entity$authFolder;
 
 use App\Repository\Auth\RoleRepository;
 use Doctrine\Common\Collections\ArrayCollection;

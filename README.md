@@ -65,7 +65,7 @@ After package installation, copy this code in config/routes/attributes.yaml
 
 ```yaml
 controllers:
-   resource: '@Symfrop\Controller\'
+   resource: '@SymfropBundle/Controller/'
    type: attribute
 ```
 

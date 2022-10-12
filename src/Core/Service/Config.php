@@ -59,22 +59,6 @@ class Config
 
     public function __construct(private array $config)
     {
-        // [
-        //     'resources_info' => [
-        //         'App/Controller' =>  '%kernel.project_dir%/src/Controller'
-        //     ],
-        //     'entities' => [
-        //         'entity' => ['user_entity' => 'App\Entity\Auth\User', 'role_entity' => 'App\Entity\Auth\Role', 'action_entity' => 'App\Entity\Auth\Action'],
-        //         'form' => CONSTANTS::AUTH_FORMS
-        //     ],
-        //     'app_roles' => CONSTANTS::APP_ROLES_ACTION,
-        //     'templates' => [
-        //         'navbar_top' => 'navbar.html.twig',
-        //         'navbar_bottom' => 'navbar_bottom.html.twig',
-        //         'stylesheets' => ['/assets/bootstrap/dist/css/bootstrap.css', '/assets/fontawesome/css/all.css'],
-        //         'scripts' => ['/assets/jquery/jquery.js', '/assets/popper.js/dist/popper.js', '/assets/bootstrap/dist/js/bootstrap.js', '/assets/fontawesome/js/all.js',]
-        //     ]
-        // ];
         $this->resources = $config['resources_info'];
         $this->userEntity = $config['entities']['entity']['user_entity'];
         $this->roleEntity = $config['entities']['entity']['role_entity'];
@@ -83,10 +67,10 @@ class Config
         $this->roleForm = $config['entities']['form']['role_form'];
         $this->actionForm = $config['entities']['form']['action_form'];
         $this->roles = $config['app_roles'];
-        $this->navbarTop = $config['templates']['navbar_top'];
-        $this->navbarBottom = $config['templates']['navbar_bottom'];
-        $this->stylesheets = $config['templates']['stylesheets'];
-        $this->scripts = $config['templates']['scripts'];
+        $this->navbarTop = $config['templates']['navbar_top'] ?? null;
+        $this->navbarBottom = $config['templates']['navbar_bottom'] ?? null;
+        $this->stylesheets = $config['templates']['stylesheets'] ?? null;
+        $this->scripts = $config['templates']['scripts'] ?? null;
         self::$instance = $this;
     }
 
